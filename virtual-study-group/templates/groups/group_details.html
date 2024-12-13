@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>{{ group.name }}</h2>
+    <p>{{ group.description }}</p>
+    <h5>Uploaded Resources</h5>
+
+    <ul>
+        {% for resource in resources %}
+        <div>
+            <li>
+                <a href="{{ url_for('static', filename='uploads/' + resource.file_path) }}" target="_blank">{{
+                    resource.title }}</a>
+                <small>(Uploaded on {{ resource.uploaded_at.strftime('%Y-%m-%d %H:%M') }})</small>
+                <a href="{{ url_for('groups.download_file', filename=resource.file_path) }}"
+                    class="text-decoration-none" download title="Download">
+                    ⏬
+                </a>
+            </li>
+        </div>
+        {% else %}
+        <p>No resources uploaded yet.</p>
+        {% endfor %}
+    </ul>
+
+    <h5>Members</h5>
+
+    <ul>
+        {% for member in members %}
+        <div>
+            <li>
+                <p>{{ member.username }}</p>
+            </li>
+        </div>
+        {% else %}
+        <p>No member yet.</p>
+        {% endfor %}
+    </ul>
+    <h5>Upcomming Meetings</h5>
+    <ul>
+        {% for meeting in meetings %}
+        <li class="list-group-item">
+            {{ meeting.title }}
+            <small><i>({{ meeting.date_time.strftime('%Y-%m-%d %H:%M:%S') }})</i></small>
+            <small><a href="{{ meeting.link }}" target="_blank">{{ meeting.link }}</a></small>
+        </li>
+        {% else %}
+        <li class="list-group-item">No meetings scheduled yet.</li>
+        {% endfor %}
+    </ul>
+
+
+    <div>
+        {% if current_user in members %}
+        <form action="{{ url_for('groups.leave_group', group_id=group.id) }}" method="POST" style="display:inline;">
+            <button type="submit" class="btn btn-danger">Leave Group</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

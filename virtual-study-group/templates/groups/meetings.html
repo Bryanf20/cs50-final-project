@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2>Meetings for {{ group.name }}</h2>
+  <ul class="list-group">
+    {% for meeting in meetings %}
+      <li class="list-group-item">
+        <strong>{{ meeting.title }}</strong><br>
+        {{ meeting.date_time.strftime('%Y-%m-%d %H:%M:%S') }}<br>
+        <a href="{{ meeting.link }}" target="_blank">{{ meeting.link }}</a>
+      </li>
+    {% else %}
+      <li class="list-group-item">No meetings scheduled yet.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

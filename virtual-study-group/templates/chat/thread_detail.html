@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Thread: {{ thread.title }}</h2>
+    <p>{{ thread.description }}</p>
+
+    <div class="messages-box border p-3 mb-3">
+        {% for message in messages %}
+        <div class="mb-2">
+            <strong>{{ message.user.username }}:</strong>
+            <span>{{ message.content }}</span>
+            <small class="text-muted">{{ message.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+        </div>
+        {% else %}
+        <p class="text-muted">No messages yet in this thread.</p>
+        {% endfor %}
+    </div>
+
+    <form method="POST">
+        
+        <div class="form-group">
+            <textarea name="message" class="form-control" rows="3" placeholder="Type your message..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary mt-2">Send</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Available Study Groups</h2>
+    <ul>
+        {% for group in groups %}
+        <li>
+            {{ group.name }} - {{ group.description }}
+            <form action="{{ url_for('groups.join_group', group_id=group.id) }}" method="POST" style="display: inline;">
+                <button type="submit" class="btn btn-primary btn-sm">Join Group</button>
+            </form>
+            <form method="POST" action="{{ url_for('groups.send_invite', group_id=group.id) }}">
+                <div class="form-group">
+                  <label for="email">Invite Member</label>
+                  <input type="email" name="email" id="email" class="form-control" placeholder="Enter email address" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Send Invite</button>
+              </form>              
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

@@ -1,0 +1,8 @@
+.venv/
+venv/
+/venv/
+.env
+/instance
+__pycache__
+static/uploads
+/migrations

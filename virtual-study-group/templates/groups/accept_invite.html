@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Join Group: {{ group.name }}</h2>
+  <p>{{ group.description }}</p>
+  <form method="POST">
+    <button type="submit" class="btn btn-primary">Join Group</button>
+  </form>
+</div>
+{% endblock %}

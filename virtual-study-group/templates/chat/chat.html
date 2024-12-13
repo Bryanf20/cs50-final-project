@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ group.name }} Chat</h2>
+
+    <h3>Threads</h3>
+    <div class="list-group">
+        {% for thread in threads %}
+        <a href="{{ url_for('chat.thread_detail', thread_id=thread.id) }}" class="list-group-item list-group-item-action">
+            {{ thread.title }}
+        </a>
+        {% else %}
+        <p>No threads yet. Start the conversation!</p>
+        {% endfor %}
+    </div>
+
+    <form method="POST" class="mt-3">
+        <div class="form-group">
+            <textarea name="message" class="form-control" rows="3" placeholder="Type your message..."></textarea>
+        </div>
+        <select name="thread_id" class="form-control mt-2">
+            {% for thread in threads %}
+            <option value="{{ thread.id }}">{{ thread.title }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-primary mt-2">Send</button>
+    </form>
+</div>
+{% endblock %}
