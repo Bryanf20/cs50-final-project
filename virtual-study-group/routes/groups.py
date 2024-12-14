@@ -268,3 +268,51 @@ def leave_group(group_id):
 
     flash("You have successfully left the group.", "success")
     return redirect(url_for('groups.view_groups'))
+
+
+# Route for Removing a Member
+@groups_bp.route('/<int:group_id>/remove_member', methods=['POST'])
+@login_required
+def remove_member(group_id):
+    # Parse data from form submission (or query parameters)
+    user_id = request.form.get('user_id') or request.args.get('user_id')
+
+    # Validate user_id in request
+    if not user_id:
+        flash("User ID is required", "warning")
+        return redirect(url_for('groups.group_details', group_id=group_id))
+
+    try:
+        user_id = int(user_id)
+    except ValueError:
+        flash("Invalid User ID", "danger")
+        return redirect(url_for('groups.group_details', group_id=group_id))
+
+    # Fetch the group
+    group = Group.query.get_or_404(group_id)
+
+    if user_id == group.created_by:
+        flash("Group creator cannot be removed from the group", "danger")
+        return redirect(url_for('groups.group_details', group_id=group_id))
+
+    # Check if the current user has permission to remove members
+    if current_user.id != group.created_by and current_user.role != 'admin':
+        flash("Permission denied", "danger")
+        return redirect(url_for('groups.group_details', group_id=group_id))
+
+    # Check if the user to be removed is a member of the group
+    member = GroupMember.query.filter_by(group_id=group_id, user_id=user_id).first()
+    if not member:
+        flash("User is not a member of the group", "warning")
+        return redirect(url_for('groups.group_details', group_id=group_id))
+
+    # Remove the user from the group
+    try:
+        db.session.delete(member)
+        db.session.commit()
+        flash("User removed from the group successfully", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash("An error occurred while removing the member", "danger")
+
+    return redirect(url_for('groups.group_details', group_id=group_id))

@@ -30,7 +30,15 @@
         {% for member in members %}
         <div>
             <li>
-                <p>{{ member.username }}</p>
+                <p class="d-inline">
+                    {{ member.username }}
+                    {% if current_user.id == group.created_by or current_user.role == 'admin' %}
+                        <form action="{{ url_for('groups.remove_member', group_id=group.id, user_id=member.id) }}"
+                              method="POST" class="d-inline">
+                            <button type="submit" class="btn btn-danger btn-sm">Remove Member</button>
+                        </form>
+                    {% endif %}
+                </p>                
             </li>
         </div>
         {% else %}
