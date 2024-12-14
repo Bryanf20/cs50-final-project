@@ -75,7 +75,7 @@ This web application is designed to help students create, manage, and collaborat
 
 1. Clone the repository
    ```bash
-   git clone https://github.com/yourusername/virtual-study-group.git
+   git clone https://github.com/Bryanf20/cs50-final-project.git
    cd virtual-study-group
    ```
 
@@ -143,9 +143,9 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## Contact
 
-Your Name - your.email@example.com
+Bryan .F - fongangbryan@gmail.com
 
-Project Link: [https://github.com/yourusername/virtual-study-group](https://github.com/yourusername/virtual-study-group)
+Project Link: [https://github.com/Bryanf20/cs50-final-project](https://github.com/Bryanf20/cs50-final-project)
 
 ## Acknowledgements
 
