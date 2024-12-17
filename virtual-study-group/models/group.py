@@ -36,13 +36,3 @@ class GroupInvite(db.Model):
     invited_at = db.Column(db.DateTime, server_default=db.func.now())
     accepted = db.Column(db.Boolean, default=False)
 
-
-# class Meeting(db.Model):
-#     __tablename__ = 'meetings'
-#     id = db.Column(db.Integer, primary_key=True)
-#     group_id = db.Column(db.Integer, db.ForeignKey('groups.id'), nullable=False)  # Group FK
-#     title = db.Column(db.String(200), nullable=False)  # Meeting title
-#     date_time = db.Column(db.DateTime, nullable=False)  # Date and time of the meeting
-#     link = db.Column(db.String(300), nullable=True)  # Meeting link (e.g., Zoom/Google Meet)
-#     created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)  # User FK
-#     created_at = db.Column(db.DateTime, server_default=db.func.now())

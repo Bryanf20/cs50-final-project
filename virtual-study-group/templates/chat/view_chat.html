@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Chat/Forum for Group: {{ group.name }}</h2>
+
+    <!-- Form for Posting a New Message -->
+    <form action="{{ url_for('chat.post_message_http', group_id=group.id) }}" method="POST">
+        <div class="mb-3">
+            <textarea name="content" class="form-control" rows="3" placeholder="Write a message..." required
+                oninput="sendTypingNotification()"></textarea>
+            <small id="typing-indicator"></small>
+        </div>
+        <button type="submit" class="btn btn-primary">Post Message</button>
+    </form>
+
+    <hr>
+
+    <!-- Display the Messages -->
+    <h5>Messages</h5>
+    <div class="messages-list">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message {% if message.user.id == current_user.id %}my-message{% else %}other-message{% endif %}">
+                    <div class="message-content">
+                        <strong>{{ message.user.username }}:</strong>
+                        <p>{{ message.content }}</p>
+                        <small><i>{{ message.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</i></small>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No messages yet.</p>
+        {% endif %}
+    </div>
+    
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+<script>
+    const socket = io.connect('http://' + document.domain + ':' + location.port + '/chat');
+    const messagesList = document.querySelector('.messages-list');
+    const timestamp = new Date().toLocaleString();
+    let typingTimer;
+    const typingDelay = 1000; // 1 second delay for "typing" detection
+
+    function sendTypingNotification() {
+        socket.emit('typing', { user: '{{ current_user.username }}' });
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(() => {
+            socket.emit('stop_typing');
+        }, typingDelay);
+    }
+
+    socket.on('new_message', function (data) {
+        const messageDiv = document.createElement('div');
+        const messagesList = document.querySelector('.messages-list');
+
+        // Determine the class to use
+        const isCurrentUser = data.user === "{{ current_user.username }}";
+        const messageClass = isCurrentUser ? 'my-message' : 'other-message';
+        
+        // Build the message HTML
+        messageDiv.classList.add('message', messageClass);
+        messageDiv.innerHTML = `
+            <div class="message-content">
+                <strong>${data.user}:</strong>
+                <p>${data.content}</p>
+                <small><i>${data.timestamp}</i></small>
+            </div>
+        `;
+
+        // Append the message and scroll to the bottom
+        messagesList.appendChild(messageDiv);
+        setTimeout(() => {
+            messagesList.scrollTop = messagesList.scrollHeight;
+        }, 0);
+    });
+    socket.on('typing', function(data) {
+        document.getElementById('typing-indicator').innerText = data.user + ' is typing...';
+    });
+
+    socket.on('stop_typing', function() {
+        document.getElementById('typing-indicator').innerText = '';
+    });
+
+    socket.on('connect_error', function(error) {
+        console.error('WebSocket connection error:', error);
+    });
+</script>
+{% endblock %}

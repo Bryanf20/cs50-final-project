@@ -1,85 +1,83 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import request, redirect, url_for, flash, Blueprint, render_template
 from flask_login import login_required, current_user
-from app import db
-from models.chat import ChatGroup, Thread, Message
-from models.group import Group
+from app import db, socketio
+from models import Group, GroupChatMessage
+from flask_socketio import emit
+from datetime import datetime
 
-# Define the blueprint
+
 chat_bp = Blueprint('chat', __name__, url_prefix='/chat')
 
-# Route to display a group chat and threads
-@chat_bp.route('/<int:group_id>', methods=['GET', 'POST'])
+# Route for Posting a Message via HTTP
+@chat_bp.route('/<int:group_id>/post_message', methods=['POST'])
 @login_required
-def group_chat(group_id):
-    group = Group.query.get_or_404(group_id)
-    threads = Thread.query.filter_by(group_id=group.id).all()  # Fetch all threads for the group
-
-    if request.method == 'POST':
-        content = request.form.get('message')
-        thread_id = request.form.get('thread_id')  # Get thread ID for message
-        if content and thread_id:
-            new_message = Message(
-                user_id=current_user.id,
-                thread_id=thread_id,
-                group_id=group.id,
-                content=content
-            )
-            db.session.add(new_message)
-            db.session.commit()
-            flash("Message sent!", "success")
-        else:
-            flash("Message cannot be empty or invalid thread!", "danger")
-        return redirect(url_for('chat.group_chat', group_id=group_id))
-
-    return render_template('chat/chat.html', group=group, threads=threads)
-    # return render_template('chat/chat.html', group=group)
-
-# Route to create a new thread
-@chat_bp.route('/<int:group_id>/thread', methods=['GET', 'POST'])
-@login_required
-def create_thread(group_id):
+def post_message_http(group_id):
     group = Group.query.get_or_404(group_id)
     
-    if request.method == 'POST':
-        title = request.form.get('title')
-        description = request.form.get('description')
+    content = request.form.get('content')
+    
+    if not content:
+        flash("Message content is required", "warning")
+        return redirect(url_for('groups.group_details', group_id=group_id))
+    
+    # Create a new chat message
+    message = GroupChatMessage(content=content, user_id=current_user.id, group_id=group_id)
+    
+    # Add the message to the database
+    db.session.add(message)
+    db.session.commit()
+    
+    # Emit message to all connected clients
+    socketio.emit('new_message', {
+        'user': current_user.username, 
+        'content': content,
+        'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    }, namespace='/chat')
+    flash("Message posted successfully", "success")
+    return redirect(url_for('chat.view_chat', group_id=group_id))
 
-        if title and description:
-            new_thread = Thread(
-                title=title,
-                description=description,
-                group_id=group.id
-            )
-            db.session.add(new_thread)
-            db.session.commit()
-            flash("New thread created!", "success")
-            return redirect(url_for('chat.group_chat', group_id=group.id))
-        else:
-            flash("Title and description are required.", "danger")
 
-    return render_template('chat/create_thread.html', group=group)
+# WebSocket Event for Posting a Message
+@socketio.on('post_message', namespace='/chat')
+def post_message_socketio(data):
+    try:
+        group_id = data.get('group_id')
+        content = data.get('content')
+        
+        if not content:
+            return
 
-# Thread Detail route
-@chat_bp.route('/threads/<int:thread_id>', methods=['GET', 'POST'])
+        # Process the message as usual
+        group = Group.query.get_or_404(group_id)
+        message = GroupChatMessage(content=content, user_id=current_user.id, group_id=group_id)
+        db.session.add(message)
+        db.session.commit()
+        
+        # Emit to others
+        socketio.emit('new_message', {
+            'user': current_user.username, 
+            'content': content,
+            'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        }, namespace='/chat')
+    except Exception as e:
+        emit('error', {'error': str(e)})
+
+@socketio.on('typing', namespace='/chat')
+def typing(data):
+    emit('typing', {'user': data['user']}, broadcast=True, include_self=False)
+
+@socketio.on('stop_typing', namespace='/chat')
+def stop_typing():
+    emit('stop_typing', broadcast=True, include_self=False)
+
+
+# Route for Viewing Messages
+@chat_bp.route('/<int:group_id>/view_chat')
 @login_required
-def thread_detail(thread_id):
-    thread = Thread.query.get_or_404(thread_id)
-    messages = Message.query.filter_by(thread_id=thread.id).all()
-
-    if request.method == 'POST':
-        content = request.form.get('message')
-        if content:
-            new_message = Message(
-                user_id=current_user.id,
-                thread_id=thread.id,
-                content=content
-            )
-            db.session.add(new_message)
-            db.session.commit()
-            flash("Message sent!", "success")
-        else:
-            flash("Message cannot be empty!", "danger")
-        return redirect(url_for('chat.thread_detail', thread_id=thread.id))
-
-    return render_template('chat/thread_detail.html', thread=thread, messages=messages)
- 
+def view_chat(group_id):
+    group = Group.query.get_or_404(group_id)
+    
+    # Fetch all messages in the group, sorted by timestamp
+    messages = GroupChatMessage.query.filter_by(group_id=group_id).order_by(GroupChatMessage.timestamp).all()
+    
+    return render_template('chat/view_chat.html', group=group, messages=messages)
