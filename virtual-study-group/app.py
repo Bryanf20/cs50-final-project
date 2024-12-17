@@ -8,6 +8,7 @@ from flask_mail import Mail
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 from flask_uploads import UploadSet, configure_uploads, IMAGES, DOCUMENTS, TEXT
+from flask_socketio import SocketIO
 
 
 # Initialize Flask app
@@ -26,6 +27,8 @@ mail = Mail(app)
 load_dotenv()  # Automatically loads .env file
 files = UploadSet('files')
 configure_uploads(app, files)
+socketio = SocketIO(app)
+
 
 # User loader for Flask-Login
 from models.user import User
@@ -33,6 +36,10 @@ from models.user import User
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+# @app.before_first_request
+# def before_first_request():
+#     socketio.init_app(app)
 
 # Register blueprints
 from routes.auth import auth_bp

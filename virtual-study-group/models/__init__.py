@@ -7,5 +7,5 @@ from .user import User
 from .group import Group, GroupMember
 from .meeting import Meeting
 from .resource import Resource
-from .chat import ChatGroup, Message, Thread
+from .chat import GroupChatMessage
 
