@@ -44,12 +44,14 @@ This web application is designed to help students create, manage, and collaborat
 ## Tech Stack
 
 ### Backend
+
 - Flask
 - Flask-SQLAlchemy
 - Flask-WTF
 - Flask-Login
 
 ### Frontend
+
 - HTML
 - CSS
 - Bootstrap
@@ -58,10 +60,12 @@ This web application is designed to help students create, manage, and collaborat
   - Vue.js
 
 ### Database
+
 - SQLite (Development)
 - PostgreSQL (Production)
 
 ### File Storage
+
 - Local Storage
 - Cloud Storage (AWS S3)
 
@@ -74,18 +78,21 @@ This web application is designed to help students create, manage, and collaborat
 ## Installation
 
 1. Clone the repository
+
    ```bash
    git clone https://github.com/Bryanf20/cs50-final-project.git
    cd virtual-study-group
    ```
 
 2. Create a virtual environment
+
    ```bash
    python -m venv venv
    source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
    ```
 
 3. Install dependencies
+
    ```bash
    pip install -r requirements.txt
    ```
@@ -95,11 +102,13 @@ This web application is designed to help students create, manage, and collaborat
    - Add necessary configuration variables
 
 5. Initialize the database
+
    ```bash
    flask db upgrade
    ```
 
 6. Run the application
+
    ```bash
    flask run
    ```
@@ -143,7 +152,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## Contact
 
-Bryan .F - fongangbryan@gmail.com
+Bryan .F - <fongangbryan@gmail.com>
 
 Project Link: [https://github.com/Bryanf20/cs50-final-project](https://github.com/Bryanf20/cs50-final-project)
 

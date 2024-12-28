@@ -2,76 +2,167 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h2>{{ group.name }}</h2>
-    <p>{{ group.description }}</p>
-    <h5>Uploaded Resources</h5>
-
-    <ul>
-        {% for resource in resources %}
-        <div>
-            <li>
-                <a href="{{ url_for('static', filename='uploads/' + resource.file_path) }}" target="_blank">{{
-                    resource.title }}</a>
-                <small>(Uploaded on {{ resource.uploaded_at.strftime('%Y-%m-%d %H:%M') }})</small>
-                <a href="{{ url_for('groups.download_file', filename=resource.file_path) }}"
-                    class="text-decoration-none" download title="Download">
-                    ⏬
-                </a>
-            </li>
+    <!-- Group Info and Actions -->
+    <div class="row mb-4">
+        <!-- Group Info -->
+        <div class="col-md-8">
+            <h2 class="mb-3">{{ group.name }}</h2>
+            <p class="text-muted">{{ group.description }}</p>
         </div>
-        {% else %}
-        <p>No resources uploaded yet.</p>
-        {% endfor %}
-    </ul>
 
-    <h5>Members</h5>
+        <!-- Actions -->
+        <div class="col-md-4 text-md-end text-center">
+            <!-- Leave Group -->
+            <form action="{{ url_for('groups.leave_group', group_id=group.id) }}" method="POST" class="d-inline">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-link text-danger" data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Leave Group">
+                    <i class="bi bi-box-arrow-right fs-3"></i>
+                </button>
+            </form>
 
-    <ul>
-        {% for member in members %}
-        <div>
-            <li>
-                <p class="d-inline">
+            <!-- Edit Group -->
+            <a href="{{ url_for('groups.edit_group', group_id=group.id) }}" class="btn btn-link text-warning"
+                data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Group">
+                <i class="bi bi-pencil-square fs-3"></i>
+            </a>
+
+            <!-- Open Chat -->
+            <a href="{{ url_for('chat.view_chat', group_id=group.id) }}" class="btn btn-link text-primary"
+                data-bs-toggle="tooltip" data-bs-placement="top" title="Open Chat">
+                <i class="bi bi-chat-dots fs-3"></i>
+            </a>
+        </div>
+    </div>
+
+
+    <!-- Section: Uploaded Resources -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            Uploaded Resources
+            <a href="{{ url_for('groups.upload_resource', group_id=group.id) }}" class="btn btn-sm btn-light float-end">
+                Upload Resources
+            </a>
+        </div>
+        <div class="card-body">
+            {% if resources %}
+            <ul class="list-group">
+                {% for resource in resources %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <a href="{{ url_for('static', filename='uploads/' + resource.file_path) }}" target="_blank">{{
+                            resource.title }}</a>
+                        <small class="text-muted">(Uploaded: {{ resource.uploaded_at.strftime('%Y-%m-%d %H:%M')
+                            }})</small>
+                    </div>
+                    <a href="{{ url_for('groups.download_file', filename=resource.file_path) }}"
+                        class="btn btn-sm btn-primary" download title="Download">
+                        ⬇
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-muted">No resources uploaded yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Section: Members -->
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+            Members
+            <a href="{{ url_for('groups.invite_member', group_id=group.id) }}" class="btn btn-sm btn-light float-end">
+                Invite Member
+            </a>
+        </div>
+        <div class="card-body">
+            {% if members %}
+            <ul class="list-group">
+                {% for member in members %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
                     {{ member.username }}
                     {% if current_user.id == group.created_by or current_user.role == 'admin' %}
-                <form action="{{ url_for('groups.remove_member', group_id=group.id, user_id=member.id) }}" method="POST"
-                    class="d-inline">
-                    <button type="submit" class="btn btn-danger btn-sm">Remove Member</button>
-                </form>
-                {% endif %}
-                </p>
-            </li>
+                    <form action="{{ url_for('groups.remove_member', group_id=group.id, user_id=member.id) }}"
+                        method="POST" class="d-inline">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-sm btn-danger"
+                            onclick="return confirm('Are you sure you want to remove {{ member.username }}?');">Remove</button>
+                    </form>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-muted">No members yet.</p>
+            {% endif %}
         </div>
-        {% else %}
-        <p>No member yet.</p>
-        {% endfor %}
-    </ul>
-    <h5>Upcomming Meetings</h5>
-    <ul>
-        {% for meeting in meetings %}
-        <li class="list-group-item">
-            {{ meeting.title }}
-            <small><i>({{ meeting.date_time.strftime('%Y-%m-%d %H:%M:%S') }})</i></small>
-            <small><a href="{{ meeting.link }}" target="_blank">{{ meeting.link }}</a></small>
-        </li>
-        {% else %}
-        <li class="list-group-item">No meetings scheduled yet.</li>
-        {% endfor %}
-    </ul>
-
-
-    <div>
-        {% if current_user in members %}
-        <form action="{{ url_for('groups.leave_group', group_id=group.id) }}" method="POST" style="display:inline;">
-            <button type="submit" class="btn btn-danger">Leave Group</button>
-        </form>
-        {% endif %}
-    </div>
-    <br>
-    <div>
-        <a href="{{ url_for('chat.view_chat', group_id=group.id) }}" class="btn btn-primary btn-sm" target="_blank">
-            Chat
-        </a>
     </div>
 
+    <!-- Section: Meetings -->
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+            <span>Upcoming Meetings</span>
+            <div>
+                <a href="{{ url_for('groups.schedule_meeting', group_id=group.id) }}" class="btn btn-sm btn-light me-2">
+                    <i class="bi bi-calendar-plus"></i> Schedule Meeting
+                </a>
+                <a href="{{ url_for('groups.list_meetings', group_id=group.id) }}" class="btn btn-sm btn-light">
+                    <i class="bi bi-list"></i> View Meetings
+                </a>
+            </div>
+        </div>
+        
+        <div class="card-body">
+            {% if meetings %}
+            <ul class="list-group">
+                {% for meeting in meetings %}
+                <li class="list-group-item">
+                    <strong>{{ meeting.title }}</strong>
+                    <small class="text-muted">({{ meeting.date_time.strftime('%Y-%m-%d %H:%M:%S') }})</small>
+                    <a href="{{ meeting.link }}" target="_blank" class="float-end">{{ meeting.link }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-muted">No meetings scheduled yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Section: Task Progress -->
+    <div class="card mb-4">
+        <div class="card-header bg-warning text-dark">
+            Task Progress
+            <a href="{{ url_for('progress.view_progress', group_id=group.id) }}" class="btn btn-sm btn-light float-end">
+                Manage Tasks
+            </a>
+        </div>
+        <div class="card-body">
+            <div class="progress mb-3" style="height: 25px;">
+                <div class="progress-bar {{ progress_color }}" role="progressbar" style="width: {{ progress }}%;"
+                    aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100">
+                    {{ progress|round(2) }}%
+                </div>
+            </div>
+            <p>Total Tasks: {{ tasks|length }} | Completed: {{ tasks|selectattr('status', 'equalto',
+                'Completed')|list|length }}</p>
+            <ul class="list-group">
+                {% for task in tasks %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>{{ task.task_name }}</strong>
+                        {% if task.assigned_user %}
+                        <small class="text-muted">Assigned to: {{ task.assigned_user.username }}</small>
+                        {% endif %}
+                    </div>
+                    <span class="badge {% if task.status == 'Completed' %}bg-success{% else %}bg-secondary{% endif %}">
+                        {{ task.status }}
+                    </span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
 </div>
 {% endblock %}

@@ -1,5 +1,4 @@
 from flask_sqlalchemy import SQLAlchemy
-
 db = SQLAlchemy()
 
 # Import all models here
@@ -8,4 +7,5 @@ from .group import Group, GroupMember
 from .meeting import Meeting
 from .resource import Resource
 from .chat import GroupChatMessage
-
+from .task_progress import TaskProgress
+from .notification import Notification

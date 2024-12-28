@@ -2,20 +2,32 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h2>Create a Study Group</h2>
-    <form method="POST">
-        {{ form.hidden_tag() }}
-        <div class="form-group">
-            {{ form.name.label }}<br>
-            {{ form.name(class="form-control") }}
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h3><i class="bi bi-people-fill me-2"></i>Create a Study Group</h3>
         </div>
-        <div class="form-group">
-            {{ form.description.label }}<br>
-            {{ form.description(class="form-control") }}
+        <div class="card-body">
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                
+                <!-- Group Name -->
+                <div class="mb-3">
+                    <label for="name" class="form-label">{{ form.name.label }}</label>
+                    {{ form.name(class="form-control", id="name") }}
+                </div>
+                
+                <!-- Group Description -->
+                <div class="mb-3">
+                    <label for="description" class="form-label">{{ form.description.label }}</label>
+                    {{ form.description(class="form-control", id="description") }}
+                </div>
+                
+                <!-- Submit Button -->
+                <div class="d-grid">
+                    {{ form.submit(class="btn btn-success btn-block") }}
+                </div>
+            </form>
         </div>
-        <div class="form-group">
-            {{ form.submit(class="btn btn-primary") }}
-        </div>
-    </form>
+    </div>
 </div>
 {% endblock %}

@@ -8,9 +8,11 @@
         <li>
             {{ group.name }} - {{ group.description }}
             <form action="{{ url_for('groups.join_group', group_id=group.id) }}" method="POST" style="display: inline;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit" class="btn btn-primary btn-sm">Join Group</button>
             </form>
             <form method="POST" action="{{ url_for('groups.send_invite', group_id=group.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="form-group">
                   <label for="email">Invite Member</label>
                   <input type="email" name="email" id="email" class="form-control" placeholder="Enter email address" required>

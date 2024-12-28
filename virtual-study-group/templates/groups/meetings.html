@@ -2,17 +2,33 @@
 
 {% block content %}
 <div class="container mt-5">
-  <h2>Meetings for {{ group.name }}</h2>
-  <ul class="list-group">
-    {% for meeting in meetings %}
-      <li class="list-group-item">
-        <strong>{{ meeting.title }}</strong><br>
-        {{ meeting.date_time.strftime('%Y-%m-%d %H:%M:%S') }}<br>
-        <a href="{{ meeting.link }}" target="_blank">{{ meeting.link }}</a>
-      </li>
-    {% else %}
-      <li class="list-group-item">No meetings scheduled yet.</li>
-    {% endfor %}
-  </ul>
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h3><i class="bi bi-calendar-event me-2"></i>Meetings for {{ group.name }}</h3>
+        </div>
+        <div class="card-body">
+            {% if meetings %}
+            <ul class="list-group">
+                {% for meeting in meetings %}
+                <li class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-1">{{ meeting.title }}</h5>
+                            <small class="text-muted">{{ meeting.date_time.strftime('%Y-%m-%d %H:%M:%S') }}</small><br>
+                            <a href="{{ meeting.link }}" target="_blank" class="text-decoration-none">
+                                <i class="bi bi-link-45deg me-1"></i>{{ meeting.link }}
+                            </a>
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <div class="alert alert-secondary" role="alert">
+                <i class="bi bi-info-circle-fill me-2"></i>No meetings scheduled yet.
+            </div>
+            {% endif %}
+        </div>
+    </div>
 </div>
 {% endblock %}

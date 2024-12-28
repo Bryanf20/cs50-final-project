@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_migrate import Migrate
+from flask_wtf import CSRFProtect
 from models import db, User
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
@@ -28,6 +29,7 @@ load_dotenv()  # Automatically loads .env file
 files = UploadSet('files')
 configure_uploads(app, files)
 socketio = SocketIO(app)
+csrf = CSRFProtect(app)
 
 
 # User loader for Flask-Login
@@ -46,12 +48,16 @@ from routes.auth import auth_bp
 from routes.chat import chat_bp
 from routes.home import home_bp
 from routes.groups import groups_bp
+from routes.progress import progress_bp
+from routes.notifications import notifications_bp
 
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(chat_bp)
 app.register_blueprint(home_bp)
 app.register_blueprint(groups_bp)
+app.register_blueprint(progress_bp)
+app.register_blueprint(notifications_bp)
 
 
 @app.route('/routes', methods=['GET'])

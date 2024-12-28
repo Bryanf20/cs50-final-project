@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from flask import Blueprint, render_template, redirect, url_for, flash, request, send_from_directory
 from flask_login import current_user, login_required
 from werkzeug.utils import secure_filename
@@ -6,6 +7,8 @@ from models.user import User
 from models.group import Group, GroupMember, GroupInvite
 from models.meeting import Meeting
 from models.resource import Resource
+from models.task_progress import TaskProgress
+from models.notification import Notification
 from forms.group_form import GroupForm
 from forms.edit_group_form import EditGroupForm
 from forms.schedule_meeting_form import ScheduleMeetingForm
@@ -38,10 +41,10 @@ def create_group():
 @groups_bp.route('/', methods=['GET'])
 @login_required
 def view_groups():
-    user_groups = Group.query.join(GroupMember).filter(GroupMember.user_id == current_user.id).all()
-    # groups = Group.query.all()
-    return render_template('groups/view.html', groups=user_groups)
-    # return render_template('groups/view.html', groups=groups)
+    # user_groups = Group.query.join(GroupMember).filter(GroupMember.user_id == current_user.id).all()
+    groups = Group.query.all()
+    # return render_template('groups/view.html', groups=user_groups)
+    return render_template('groups/view.html', groups=groups)
 
 
 # Group details
@@ -61,12 +64,32 @@ def group_details(group_id):
         members.append(User.query.filter_by(id=group_mem.user_id).one())
     resources = Resource.query.filter_by(group_id=group.id).all()
     meetings = Meeting.query.filter_by(group_id=group.id).order_by(Meeting.date_time).all()
+    tasks = TaskProgress.query.filter_by(group_id= group_id).all()
+
+    # Calculate task progress
+    total_tasks = len(tasks)
+    completed_tasks = sum(1 for task in tasks if task.status == 'Completed')
+    progress_percentage = (completed_tasks / total_tasks * 100) if total_tasks > 0 else 0
+
+    # # Check for tasks due within 24 hours
+    # now = datetime.utcnow()
+    # for task in tasks:
+    #     if task.status == 'Pending' and task.due_date - now <= timedelta(hours=24):
+    #         # Create a notification for the user
+    #         notification = Notification(
+    #             user_id=current_user.id,
+    #             message=f"Task '{task.task_name}' is due soon!",
+    #         )
+    #         db.session.add(notification)
+    # db.session.commit()
     
     return render_template('groups/group_details.html',
                            group=group,
                            resources=resources,
                            members=members,
                            meetings=meetings,
+                           tasks=tasks,
+                           progress=progress_percentage,
                            current_user=current_user)
 
 
@@ -86,6 +109,12 @@ def join_group(group_id):
 
 
 # Route for Sending Invites
+@groups_bp.route('/invite_member/<int:group_id>', methods=['GET'])
+@login_required
+def invite_member(group_id):
+    group = Group.query.get_or_404(group_id)
+    return render_template('groups/invite.html', group=group)
+
 @groups_bp.route('/<int:group_id>/invite', methods=['POST'])
 @login_required
 def send_invite(group_id):
@@ -311,7 +340,7 @@ def remove_member(group_id):
         db.session.delete(member)
         db.session.commit()
         flash("User removed from the group successfully", "success")
-    except Exception as e:
+    except Exception as e:  # noqa: F841
         db.session.rollback()
         flash("An error occurred while removing the member", "danger")
 
