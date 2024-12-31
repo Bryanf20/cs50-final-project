@@ -5,5 +5,4 @@ venv/
 /instance
 __pycache__
 static/uploads
-/migrations
 /instance
