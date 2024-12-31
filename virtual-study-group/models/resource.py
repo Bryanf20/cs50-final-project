@@ -2,7 +2,7 @@ from . import db
 # from flask_login import current_user
 
 class Resource(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     group_id = db.Column(db.Integer, db.ForeignKey('group.id'), nullable=False)
     title = db.Column(db.String(200), nullable=False)
     file_path = db.Column(db.String(300), nullable=False)

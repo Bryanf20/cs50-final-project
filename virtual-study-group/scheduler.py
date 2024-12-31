@@ -26,15 +26,17 @@ def delete_old_meeting(app):
         now = datetime.utcnow()
         meetings = Meeting.query.filter(Meeting.date_time < (now + timedelta(hours=2))).all()
         for meeting in meetings:
-            Meeting.query.filter_by(id=meeting.id).delete()
+            # Meeting.query.filter_by(id=meeting.id).delete()
+            db.session.delete(meeting)
             db.session.commit()
+            print("Meeting deleted successfully.")
 
 
 # Scheduler initialization function
 def initialize_scheduler(app):
     scheduler = BackgroundScheduler()
-    scheduler.add_job(check_meeting_reminders, 'interval', minutes=300, args=[app]) # Check every 5 hours
-    scheduler.add_job(check_task_due_date, 'interval', minutes=300, args=[app]) # Check every 5 hours
-    scheduler.add_job(delete_old_meeting, 'interval', minutes=120, args=[app]) # Check every 2 hours
+    scheduler.add_job(check_meeting_reminders, 'interval', seconds=5, args=[app]) # Check every 5 hours
+    scheduler.add_job(check_task_due_date, 'interval', seconds=5, args=[app]) # Check every 5 hours
+    scheduler.add_job(delete_old_meeting, 'interval', seconds=5, args=[app]) # Check every 2 hours
     scheduler.start()
     print("Scheduler started successfully.")

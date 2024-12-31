@@ -3,7 +3,7 @@ from . import db
 
 
 class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String(150), nullable=False, unique=True)
     email = db.Column(db.String(150), nullable=False, unique=True)
     password_hash = db.Column(db.String(200), nullable=False)
@@ -13,9 +13,9 @@ class User(db.Model):
     # Define relationships
     memberships = db.relationship('GroupMember', backref='user', lazy=True)
     resources = db.relationship('Resource', back_populates='user', cascade='all, delete-orphan')
-    # messages = db.relationship('Message', back_populates='user', lazy='dynamic')
-    # threads = db.relationship('Thread', backref='user', lazy='dynamic')
-
+    notifications = db.relationship('Notification', backref='user', cascade='all, delete-orphan', passive_deletes=True)
+    # group_chat_messages = db.relationship('GroupChatMessage', backref='user', cascade='all, delete-orphan', lazy=True)
+    
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
@@ -41,11 +41,6 @@ class User(db.Model):
 
     def __repr__(self):
         return f'<User {self.username}>'
-    
-    # def is_member_of(self, group):
-    #     # Delayed import to avoid circular import issue
-    #     from models.group import GroupMember
-    #     return GroupMember.query.filter_by(user_id=self.id, group_id=group.id).first() is not None
 
     def is_member_of(self, group):
         # Use the `memberships` relationship to check membership

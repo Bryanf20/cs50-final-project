@@ -6,7 +6,7 @@ from models.notification import Notification
 class TaskProgress(db.Model):
     __tablename__ = 'task_progress'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     group_id = db.Column(db.Integer, db.ForeignKey('group.id'), nullable=False)
     task_name = db.Column(db.String(150), nullable=False)
     status = db.Column(db.String(20), default='Pending')  # Options: Pending, Completed
@@ -60,6 +60,13 @@ class TaskProgress(db.Model):
 
     def notify_group_members(self, message):
         group = Group.query.get(self.group_id)
+        if group is None:
+            # Handle the error or return a message indicating group is not found
+            print("Group not found! Deleting the task.")
+            db.session.delete(self)
+            db.session.commit()
+            return
+
         for user in group.members:
             existing_notification = Notification.query.filter_by(
                 user_id=user.id,

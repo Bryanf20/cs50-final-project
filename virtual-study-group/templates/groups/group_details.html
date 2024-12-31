@@ -95,13 +95,15 @@
             <ul class="list-group">
                 {% for member in members %}
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                    {{ member.username }}
+                    {{ "Deleted User" if member is none else member.username }}
                     {% if current_user.id == group.created_by or current_user.role == 'admin' %}
                     <form action="{{ url_for('groups.remove_member', group_id=group.id, user_id=member.id) }}"
                         method="POST" class="d-inline">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button type="submit" class="btn btn-sm btn-danger"
-                            onclick="return confirm('Are you sure you want to remove {{ member.username }}?');">Remove</button>
+                        <button type="submit" class="btn btn-link text-danger" data-bs-toggle="tooltip"
+                            data-bs-placement="top" title="Remove From Group"
+                            onclick="return confirm('Are you sure you want to remove {{ member.username }}?');"><i
+                                class="bi bi-person-dash fs-5"></i></button>
                     </form>
                     {% endif %}
                 </li>
@@ -141,11 +143,13 @@
                     <form action="{{ url_for('groups.delete_meeting', group_id=group.id, meeting_id=meeting.id) }}"
                         method="POST" class="d-inline">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button type="submit" class="btn btn-sm btn-danger"
-                            onclick="return confirm('Are you sure you want to Delete {{ meeting.title }} meeting?');">Delete</button>
+                        <button type="submit" class="btn btn-link text-danger" data-bs-toggle="tooltip"
+                            data-bs-placement="top" title="Delete Meeting"
+                            onclick="return confirm('Are you sure you want to Delete {{ meeting.title }} meeting?');"><i
+                                class="bi bi-trash fs-5"></i></button>
                     </form>
+                    {% endif %}
                 </li>
-                {% endif %}
                 {% endfor %}
             </ul>
             {% else %}

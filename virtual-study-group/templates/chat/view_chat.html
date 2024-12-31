@@ -14,7 +14,7 @@
                 <div
                     class="message {% if message.user.id == current_user.id %}my-message{% else %}other-message{% endif %}">
                     <div class="message-content">
-                        <strong>{{ message.user.username }}:</strong>
+                        <strong>{{ "Deleted User" if message.user is none else message.user.username }}:</strong>
                         <p>{{ message.content }}</p>
                         <small><i>{{ message.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</i></small>
                     </div>

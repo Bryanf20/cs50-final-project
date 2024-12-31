@@ -79,6 +79,7 @@
                                 </li>
                                 <li>
                                     <form method="POST" action="{{ url_for('auth.delete_account') }}" class="d-inline">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                         <button type="submit" class="dropdown-item text-danger"
                                             onclick="return confirm('Are you sure?')">
                                             <i class="bi bi-trash"></i> Delete Account

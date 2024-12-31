@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+# from datetime import datetime, timedelta
 from flask import Blueprint, render_template, redirect, url_for, flash, request, send_from_directory
 from flask_login import current_user, login_required
 from werkzeug.utils import secure_filename
@@ -8,7 +8,7 @@ from models.group import Group, GroupMember, GroupInvite
 from models.meeting import Meeting
 from models.resource import Resource
 from models.task_progress import TaskProgress
-from models.notification import Notification
+# from models.notification import Notification
 from forms.group_form import GroupForm
 from forms.accept_invite_form import AcceptInviteForm
 from forms.edit_group_form import EditGroupForm
@@ -70,7 +70,7 @@ def group_details(group_id):
     group_members = GroupMember.query.filter_by(group_id=group_id).all()
     members = []
     for group_mem in group_members:
-        members.append(User.query.filter_by(id=group_mem.user_id).one())
+        members.append(User.query.filter_by(id=group_mem.user_id).first())
     resources = Resource.query.filter_by(group_id=group.id).all()
     meetings = Meeting.query.filter_by(group_id=group.id).order_by(Meeting.date_time).all()
     tasks = TaskProgress.query.filter_by(group_id= group_id).all()
@@ -150,7 +150,7 @@ def send_invite(group_id):
     try:
         mail.send(msg)
         flash('Invite sent successfully!', 'success')
-    except Exception as e:  # Catch potential internet connection issues
+    except Exception as e:  # Catch potential internet connection issues  # noqa: F841
         db.session.rollback()  # Rollback the DB transaction if needed
         flash('Failed to send the invite. Please check your internet connection.', 'danger')
         return redirect(url_for('groups.group_details', group_id=group_id))
@@ -210,16 +210,8 @@ def schedule_meeting(group_id):
     if not current_user.is_member_of(group):
         flash('You are not a member of this group.', 'warning')
         return redirect(url_for('home.home'))
-    
-    # if not GroupMember.query.filter_by(user_id=current_user.id, group_id=group.id).first():
-    #     flash('You are not a member of this group.', 'danger')
-    #     return redirect(url_for('groups.view_groups'))
 
     form = ScheduleMeetingForm()
-    # title=form.title.data
-    # date_time=form.date_time.data
-    # link=form.link.data
-    # print(title, date_time, link)
 
     if form.validate_on_submit():
         print("Form data:", request.form)  # Debug raw form data
@@ -400,7 +392,7 @@ def delete_group(group_id):
         db.session.commit()
         flash("Group deleted successfully.", "success")
         return redirect(url_for('home.home'))
-    except Exception as e:
+    except Exception:
         db.session.rollback()
         flash("An error occurred while deleting the group.", "danger")
         return redirect(url_for('groups.group_details', group_id=group_id))

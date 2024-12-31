@@ -9,8 +9,8 @@
         <div class="card-body">
             <!-- Progress Bar -->
             <div class="progress mb-4">
-                <div class="progress-bar bg-success" role="progressbar" style="width: {{ progress }}%;" 
-                     aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-bar bg-success" role="progressbar" style="width: {{ progress }}%;"
+                    aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100">
                     {{ progress|round(2) }}%
                 </div>
             </div>
@@ -50,7 +50,8 @@
                 <div class="col-md-3">
                     <select name="status" class="form-select">
                         <option value="">Filter by status...</option>
-                        <option value="Pending" {% if request.args.get('status')=='Pending' %}selected{% endif %}>Pending
+                        <option value="Pending" {% if request.args.get('status')=='Pending' %}selected{% endif %}>
+                            Pending
                         </option>
                         <option value="Completed" {% if request.args.get('status')=='Completed' %}selected{% endif %}>
                             Completed</option>
@@ -106,27 +107,32 @@
                         {% if task.assigned_user %}
                         <span class="badge bg-info text-dark">Assigned to: {{ task.assigned_user.username }}</span>
                         {% endif %}
-                        <span class="badge bg-{{ 'success' if task.status == 'Completed' else 'secondary' }}">{{ task.status
+                        <span class="badge bg-{{ 'success' if task.status == 'Completed' else 'secondary' }}">{{
+                            task.status
                             }}</span>
                     </div>
                     <div>
                         <form action="{{ url_for('progress.update_status', task_id=task.id) }}" method="POST"
                             class="d-inline">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <select name="status" class="form-select form-select-sm d-inline" onchange="this.form.submit()">
-                                <option value="Pending" {% if task.status=='Pending' %}selected{% endif %}>Pending</option>
+                            <select name="status" class="form-select form-select-sm d-inline"
+                                onchange="this.form.submit()">
+                                <option value="Pending" {% if task.status=='Pending' %}selected{% endif %}>Pending
+                                </option>
                                 <option value="Completed" {% if task.status=='Completed' %}selected{% endif %}>Completed
                                 </option>
                             </select>
                         </form>
-                        <a href="{{ url_for('progress.edit_task', task_id=task.id) }}" class="btn btn-sm btn-warning">
-                            Edit
+                        <a href="{{ url_for('progress.edit_task', task_id=task.id) }}" class="btn btn-link text-warning"
+                            data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Task">
+                            <i class="bi bi-pencil-square"></i>
                         </a>
                         <form action="{{ url_for('progress.delete_task', task_id=task.id) }}" method="POST"
                             class="d-inline">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button type="submit" class="btn btn-sm btn-danger"
-                                onclick="return confirm('Are you sure?')">Delete</button>
+                            <button type="submit" class="btn btn-link text-danger" data-bs-toggle="tooltip"
+                                data-bs-placement="top" title="Delete Task" onclick="return confirm('Are you sure?')"><i
+                                    class="bi bi-trash"></i></button>
                         </form>
                     </div>
                 </li>

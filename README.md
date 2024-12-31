@@ -15,8 +15,8 @@ This web application is designed to help students create, manage, and collaborat
 
 - **Group Management**
   - Create and join study groups
-  - Invite members via email or unique group codes
-  - Manage group settings and permissions
+  - Invite members via email
+  - Manage group settings
 
 - **Meeting Scheduler**
   - Schedule group study sessions
@@ -28,13 +28,11 @@ This web application is designed to help students create, manage, and collaborat
 
 - **Communication Tools**
   - Group chat and discussion forum
-  - Real-time messaging
   - Collaborative communication
 
 - **Progress Tracking**
   - Individual and group study goal tracking
   - Performance insights
-  - Motivation and accountability features
 
 - **Notifications**
   - In-app notifications
@@ -43,10 +41,7 @@ This web application is designed to help students create, manage, and collaborat
 
 ### Backend
 
-- Flask
-- Flask-SQLAlchemy
-- Flask-WTF
-- Flask-Login
+- Flask and its associated libraries
 
 ### Frontend
 
@@ -64,6 +59,7 @@ This web application is designed to help students create, manage, and collaborat
 - Local Storage
 
 ## Files
+
 
 ## Prerequisites
 
@@ -121,6 +117,8 @@ This web application is designed to help students create, manage, and collaborat
 5. Initialize the database
 
    ```bash
+   flask db init
+   flask db migrate -m "Initial migration"
    flask db upgrade
    ```
 

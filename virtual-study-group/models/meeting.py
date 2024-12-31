@@ -4,7 +4,7 @@ from models.group import Group
 from datetime import datetime, timedelta
 
 class Meeting(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     group_id = db.Column(db.Integer, db.ForeignKey('group.id'), nullable=False)
     title = db.Column(db.String(100), nullable=False)
     date_time = db.Column(db.DateTime, nullable=False)
