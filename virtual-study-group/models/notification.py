@@ -8,6 +8,8 @@ class Notification(db.Model):
     message = db.Column(db.String(255), nullable=False)
     is_read = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    is_real_time_sent = db.Column(db.Boolean, default=False)
+    due_date = db.Column(db.DateTime, nullable=True)
 
     user = db.relationship('User', backref='notifications')
 

@@ -10,7 +10,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 from flask_uploads import UploadSet, configure_uploads, IMAGES, DOCUMENTS, TEXT
 from flask_socketio import SocketIO
-
+from scheduler import initialize_scheduler
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -30,6 +30,7 @@ files = UploadSet('files')
 configure_uploads(app, files)
 socketio = SocketIO(app)
 csrf = CSRFProtect(app)
+initialize_scheduler(app)
 
 
 # User loader for Flask-Login
@@ -84,3 +85,8 @@ def list_routes():
 @app.errorhandler(404)
 def page_not_found(e):
     return "Page Not Found", 404
+
+# @app.route("/scheduler/jobs")
+# def list_jobs():
+#     jobs = [{"id": job.id, "next_run_time": str(job.next_run_time)} for job in initialize_scheduler.scheduler.get_jobs()]
+#     return {"jobs": jobs}

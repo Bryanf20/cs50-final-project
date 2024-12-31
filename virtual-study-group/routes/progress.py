@@ -48,6 +48,8 @@ def add_task(group_id):
     # due_date = request.form.get('due_date')
     due_date_str = request.form.get('due_date')  # Input from the form (e.g., '2024-12-04')
     assigned_to = request.form.get('assigned_to')
+    if assigned_to == "NULL":
+        assigned_to = None
 
     # Convert the string to a datetime object
     if due_date_str:
@@ -113,6 +115,9 @@ def edit_task(task_id):
         task_name = request.form.get('task_name')
         due_date = request.form.get('due_date')
         status = request.form.get('status')
+        assigned_to = request.form.get('assigned_to')
+        if assigned_to == "NULL":
+            assigned_to = None
 
         if not task_name or not due_date or not status:
             flash("All fields are required.", "warning")
@@ -122,6 +127,7 @@ def edit_task(task_id):
             task.task_name = task_name
             task.due_date = datetime.strptime(due_date, '%Y-%m-%d')
             task.status = status
+            task.assigned_to = assigned_to
 
             db.session.commit()
             flash("Task updated successfully!", "success")
@@ -144,7 +150,7 @@ def delete_task(task_id):
     # Ensure the current user has permission
     if not current_user.is_member_of(group):
         flash("You do not have permission to delete this task.", "danger")
-        return redirect(url_for('groups.group_details', group_id=task.group_id))
+        return redirect(url_for('home.home'))
 
     try:
         db.session.delete(task)
@@ -155,4 +161,4 @@ def delete_task(task_id):
         flash("An error occurred while deleting the task.", "danger")
         print(str(e))
 
-    return redirect(url_for('groups.group_details', group_id=task.group_id))
+    return redirect(url_for('progress.view_progress', group_id=task.group_id))

@@ -1,5 +1,7 @@
 # Virtual Study Group Web Application
 
+## Video Demo: [Link](URL HERE)
+
 ## Overview
 
 This web application is designed to help students create, manage, and collaborate in virtual study groups. It provides a comprehensive platform for academic collaboration, resource sharing, and group study coordination.
@@ -18,12 +20,10 @@ This web application is designed to help students create, manage, and collaborat
 
 - **Meeting Scheduler**
   - Schedule group study sessions
-  - Calendar integration
-  - Meeting link generation
+  - Meeting link generation (google meet/ zoom)
 
 - **Resource Sharing**
   - Upload and share study materials
-  - File categorization
   - Easy resource discovery
 
 - **Communication Tools**
@@ -37,9 +37,7 @@ This web application is designed to help students create, manage, and collaborat
   - Motivation and accountability features
 
 - **Notifications**
-  - Email and in-app notifications
-  - Real-time updates
-  - Customizable alert settings
+  - In-app notifications
 
 ## Tech Stack
 
@@ -55,19 +53,17 @@ This web application is designed to help students create, manage, and collaborat
 - HTML
 - CSS
 - Bootstrap
-- Optional JavaScript Frameworks
-  - React
-  - Vue.js
+- JavaScript
 
 ### Database
 
-- SQLite (Development)
-- PostgreSQL (Production)
+- SQLite3 (SQLAlchemy)
 
 ### File Storage
 
 - Local Storage
-- Cloud Storage (AWS S3)
+
+## Files
 
 ## Prerequisites
 
@@ -110,33 +106,15 @@ This web application is designed to help students create, manage, and collaborat
 6. Run the application
 
    ```bash
+   cd virtual-study-group
    flask run
    ```
 
 ## Configuration
 
-- Configure database settings in `config.py`
+- Configure database settings in `.env`
 - Set up email services for notifications
 - Configure file storage options
-
-## Testing
-
-```bash
-python -m pytest tests/
-```
-
-## Deployment
-
-- Recommended platforms: Heroku, AWS, DigitalOcean
-- Use PostgreSQL for production
-- Configure environment-specific settings
-
-## Security Considerations
-
-- Implement HTTPS
-- Use strong password hashing
-- Implement proper access controls
-- Regular security audits
 
 ## Contributing
 
@@ -145,6 +123,21 @@ python -m pytest tests/
 3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
+
+## Future Works
+
+### Deployment
+
+- Recommended platforms: Heroku, AWS, DigitalOcean
+- Use PostgreSQL for production
+- Configure environment-specific settings
+
+### Security Considerations
+
+- Implement HTTPS
+- Use strong password hashing
+- Implement proper access controls
+- Regular security audits
 
 ## License
 
@@ -161,3 +154,4 @@ Project Link: [https://github.com/Bryanf20/cs50-final-project](https://github.co
 - Flask
 - Bootstrap
 - SQLAlchemy
+- ChatGPT

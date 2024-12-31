@@ -33,12 +33,66 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+                    <!-- Notifications -->
                     {% if current_user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('auth.logout') }}">
-                            <i class="bi bi-box-arrow-right"></i> Logout
-                        </a>
-                    </li>
+                    <div class="dropdown">
+                        <button class="btn position-relative dropdown-toggle" type="button" id="notificationsDropdown"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-bell"></i>
+                            <span
+                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{ current_user.notifications|selectattr('is_read', 'equalto', False)|list|length }}
+                            </span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown">
+                            {% set unread_notifications = current_user.notifications | selectattr('is_read', 'equalto', False) %}
+                            {% for notification in unread_notifications %}
+                            <li class="dropdown-item bg-light">
+                                {{ notification.message }}
+                                <i><small class="text-muted d-block">Due Date - {% if notification.due_date %}
+                                    {{ notification.due_date.strftime('%Y-%m-%d') }}
+                                  {% else %}
+                                    No due date set
+                                  {% endif %}</small></i>
+                            </li>
+                            {% else %}
+                            <li class="dropdown-item text-muted text-center">No new notifications</li>
+                            {% endfor %}
+                        </ul>
+                        
+                    </div>
+                    {% endif %}
+                    {% if current_user.is_authenticated %}
+                    <!-- User Dropdown -->
+                    <div class="dropdown">
+                        <div class="d-inline-block" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                            title="{{ current_user.username }}: Manage Account">
+                            <button class="btn" type="button" id="userDropdown" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                <i class="bi bi-person"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('auth.change_password') }}">
+                                        <i class="bi bi-shield-lock"></i> Change Password
+                                    </a>
+                                </li>
+                                <li>
+                                    <form method="POST" action="{{ url_for('auth.delete_account') }}" class="d-inline">
+                                        <button type="submit" class="dropdown-item text-danger"
+                                            onclick="return confirm('Are you sure?')">
+                                            <i class="bi bi-trash"></i> Delete Account
+                                        </button>
+                                    </form>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('auth.logout') }}">
+                                        <i class="bi bi-box-arrow-right"></i> Logout
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                     {% else %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('auth.login') }}">
@@ -52,35 +106,11 @@
                     </li>
                     {% endif %}
                 </ul>
-                <!-- Notifications -->
-                {% if current_user.is_authenticated %}
-                <div class="dropdown ms-3">
-                    <button class="btn btn-outline-secondary position-relative dropdown-toggle" type="button"
-                        id="notificationsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-bell"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                            {{ current_user.notifications|selectattr('is_read', 'equalto', False)|list|length }}
-                        </span>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown">
-                        {% for notification in current_user.notifications %}
-                        <li class="dropdown-item {% if not notification.is_read %}bg-light{% endif %}">
-                            {{ notification.message }}
-                            <small class="text-muted d-block">{{ notification.created_at.strftime('%Y-%m-%d %H:%M')
-                                }}</small>
-                        </li>
-                        {% else %}
-                        <li class="dropdown-item text-muted text-center">No new notifications</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                {% endif %}
             </div>
         </div>
     </nav>
 
     <!-- Flash Messages -->
-    <!-- Flash Notifications -->
     <div id="flash-messages-container" class="toast-container position-fixed bottom-0 end-0 p-3">
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -110,14 +140,14 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
         // Auto-dismiss flash messages
-        setTimeout(() => {
-            const flashMessages = document.getElementById('flash-messages');
-            if (flashMessages) {
-                flashMessages.style.transition = 'opacity 0.5s ease';
-                flashMessages.style.opacity = '0';
-                setTimeout(() => flashMessages.remove(), 500); // Remove after fade
-            }
-        }, 5000);
+        // setTimeout(() => {
+        //    const flashMessages = document.getElementById('flash-messages');
+        //    if (flashMessages) {
+        //        flashMessages.style.transition = 'opacity 0.5s ease';
+        //        flashMessages.style.opacity = '0';
+        //        setTimeout(() => flashMessages.remove(), 500); // Remove after fade
+        //    }
+        // }, 5000);
 
         document.addEventListener('DOMContentLoaded', function () {
             const toastElements = document.querySelectorAll('.toast');

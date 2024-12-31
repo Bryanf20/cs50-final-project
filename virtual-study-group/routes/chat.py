@@ -31,7 +31,7 @@ def post_message_http(group_id):
     db.session.add(message)
     db.session.commit()
     
-    # Emit message to all connected clients
+    # Emit message to all connected clients (Used ChatGPT)
     socketio.emit('new_message', {
         'user': current_user.username, 
         'content': content,
@@ -41,7 +41,7 @@ def post_message_http(group_id):
     return redirect(url_for('chat.view_chat', group_id=group_id))
 
 
-# WebSocket Event for Posting a Message
+# WebSocket Event for Posting a Message (Used ChatGPT)
 @socketio.on('post_message', namespace='/chat')
 def post_message_socketio(data):
     try:

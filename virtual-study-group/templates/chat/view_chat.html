@@ -45,6 +45,7 @@
 {% block script %}
 <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
 <script>
+    // Got some help using ChatGPT while implementing this script
     const socket = io.connect('http://' + document.domain + ':' + location.port + '/chat');
     const messagesList = document.querySelector('.messages-list');
     const typingIndicator = document.getElementById('typing-indicator');

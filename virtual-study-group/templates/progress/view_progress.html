@@ -28,7 +28,7 @@
                     </div>
                     <div class="col-md-3">
                         <select name="assigned_to" class="form-select">
-                            <option value="">Assign to...</option>
+                            <option value="NULL">Assign to...</option>
                             {% for member in group.members %}
                             <option value="{{ member.user.id }}">{{ member.user.username }}</option>
                             {% endfor %}
@@ -119,6 +119,9 @@
                                 </option>
                             </select>
                         </form>
+                        <a href="{{ url_for('progress.edit_task', task_id=task.id) }}" class="btn btn-sm btn-warning">
+                            Edit
+                        </a>
                         <form action="{{ url_for('progress.delete_task', task_id=task.id) }}" method="POST"
                             class="d-inline">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
