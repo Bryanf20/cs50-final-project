@@ -96,6 +96,27 @@ This web application is designed to help students create, manage, and collaborat
 4. Set up environment variables
    - Create a `.env` file
    - Add necessary configuration variables
+   - Use the example below for your `.env` file
+
+   ```bash
+    FLASK_ENV=development
+    FLASK_APP=app.py
+    FLASK_DEBUG=1
+
+    SECRET_KEY=your secret key(random number)
+    DATABASE_URL=sqlite:///study_group.db
+    MAIL_SERVER=your mail server
+    MAIL_PORT=587
+    MAIL_USE_TLS=True
+    MAIL_USE_SSL=False
+    MAIL_USERNAME=youremail@email.com
+    MAIL_PASSWORD=your password
+    MAIL_SENDER_NAME="Virtual Study Group"
+    MAIL_SENDER_EMAIL=youremail@email.com
+
+    UPLOADED_FILES_DEST='static/uploads'  # Folder to store uploaded files
+    UPLOADED_FILES_ALLOW=['pdf', 'docx', 'txt', 'jpg', 'png', 'md']
+   ```
 
 5. Initialize the database
 
