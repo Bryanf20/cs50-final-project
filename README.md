@@ -1,6 +1,6 @@
 # Virtual Study Group Web Application
 
-## Video Demo: [Link](https://youtu.be/_KAktPEzHAg?si=3nJ0fjs6SWEgKL4-)
+## Video Demo: [YouTube](https://youtu.be/_KAktPEzHAg?si=3nJ0fjs6SWEgKL4-)
 
 ## Overview
 
