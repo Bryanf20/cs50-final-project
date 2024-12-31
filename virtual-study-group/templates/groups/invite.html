@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h3>Invite Member</h3>
+        </div>
+        <div class="card-body">
+            <!-- Group Info -->
+            <div class="mb-4">
+                <h5>{{ group.name }}</h5>
+                <p class="text-muted">{{ group.description }}</p>
+            </div>
+
+            <!-- Invite Member Form -->
+            <form method="POST" action="{{ url_for('groups.send_invite', group_id=group.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="form-group mb-3">
+                    <label for="email" class="form-label">Member's Email Address</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                        <input type="email" name="email" id="email" class="form-control"
+                            placeholder="Enter member's email address" required>
+                    </div>
+                    <small class="form-text text-muted">We'll send an invitation to this email address.</small>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-send"></i> Send Invite
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

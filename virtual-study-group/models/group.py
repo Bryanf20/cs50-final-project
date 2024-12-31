@@ -7,8 +7,7 @@ class Group(db.Model):
     created_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
 
-    members = db.relationship('GroupMember', backref='group', lazy='dynamic')
-    
+    members = db.relationship('GroupMember', backref='group', lazy='dynamic', cascade='all, delete-orphan')
     resources = db.relationship('Resource', back_populates='group', cascade='all, delete-orphan')
     # messages = db.relationship('Message', backref='group', lazy='dynamic')
     # threads = db.relationship('Thread', backref='group', lazy='dynamic') 
@@ -16,6 +15,15 @@ class Group(db.Model):
     def __repr__(self):
         return f'<Group {self.name}>'
     
+# class Group(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     name = db.Column(db.String(150), nullable=False)
+#     description = db.Column(db.Text, nullable=True)
+#     created_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+#     created_at = db.Column(db.DateTime, server_default=db.func.now())
+#     members = db.relationship('GroupMember', backref='group', cascade='all, delete-orphan')
+#     resources = db.relationship('Resource', backref='group', cascade='all, delete-orphan')
+#     tasks = db.relationship('TaskProgress', backref='group', cascade='all, delete-orphan')
 
 class GroupMember(db.Model):
     id = db.Column(db.Integer, primary_key=True)

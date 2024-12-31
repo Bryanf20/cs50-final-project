@@ -1,51 +1,58 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
-    <h2>Chat/Forum for Group: {{ group.name }}</h2>
-
-    <!-- Form for Posting a New Message -->
-    <form action="{{ url_for('chat.post_message_http', group_id=group.id) }}" method="POST">
-        <div class="mb-3">
-            <textarea name="content" class="form-control" rows="3" placeholder="Write a message..." required
-                oninput="sendTypingNotification()"></textarea>
-            <small id="typing-indicator"></small>
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5><i class="bi bi-chat-dots me-2"></i>Chat/Forum for Group: {{ group.name }}</h5>
         </div>
-        <button type="submit" class="btn btn-primary">Post Message</button>
-    </form>
-
-    <hr>
-
-    <!-- Display the Messages -->
-    <h5>Messages</h5>
-    <div class="messages-list">
-        {% if messages %}
-            {% for message in messages %}
-                <div class="message {% if message.user.id == current_user.id %}my-message{% else %}other-message{% endif %}">
+        <div class="card-body">
+            <!-- Messages List -->
+            <div class="messages-list border rounded p-3 mb-4" style="max-height: 400px; overflow-y: auto;">
+                {% if messages %}
+                {% for message in messages %}
+                <div
+                    class="message {% if message.user.id == current_user.id %}my-message{% else %}other-message{% endif %}">
                     <div class="message-content">
                         <strong>{{ message.user.username }}:</strong>
                         <p>{{ message.content }}</p>
                         <small><i>{{ message.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</i></small>
                     </div>
                 </div>
-            {% endfor %}
-        {% else %}
-            <p>No messages yet.</p>
-        {% endif %}
+                {% endfor %}
+                {% else %}
+                <p class="text-muted">No messages yet.</p>
+                {% endif %}
+            </div>
+
+            <!-- Typing Indicator -->
+            <small id="typing-indicator" class="text-muted"></small>
+
+            <!-- Form for Posting a New Message -->
+            <form action="{{ url_for('chat.post_message_http', group_id=group.id) }}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="input-group">
+                    <textarea name="content" class="form-control" rows="2" placeholder="Write a message..." required
+                        oninput="sendTypingNotification()"></textarea>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-send"></i></button>
+                </div>
+            </form>
+        </div>
     </div>
-    
 </div>
 {% endblock %}
 
 {% block script %}
 <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
 <script>
+    // Got some help using ChatGPT while implementing this script
     const socket = io.connect('http://' + document.domain + ':' + location.port + '/chat');
     const messagesList = document.querySelector('.messages-list');
-    const timestamp = new Date().toLocaleString();
+    const typingIndicator = document.getElementById('typing-indicator');
     let typingTimer;
-    const typingDelay = 1000; // 1 second delay for "typing" detection
+    const typingDelay = 1000; // Delay for "stop typing"
 
+    // Send typing notification
     function sendTypingNotification() {
         socket.emit('typing', { user: '{{ current_user.username }}' });
         clearTimeout(typingTimer);
@@ -54,16 +61,11 @@
         }, typingDelay);
     }
 
+    // Handle new messages
     socket.on('new_message', function (data) {
         const messageDiv = document.createElement('div');
-        const messagesList = document.querySelector('.messages-list');
-
-        // Determine the class to use
         const isCurrentUser = data.user === "{{ current_user.username }}";
-        const messageClass = isCurrentUser ? 'my-message' : 'other-message';
-        
-        // Build the message HTML
-        messageDiv.classList.add('message', messageClass);
+        messageDiv.classList.add('message', isCurrentUser ? 'my-message' : 'other-message');
         messageDiv.innerHTML = `
             <div class="message-content">
                 <strong>${data.user}:</strong>
@@ -71,22 +73,21 @@
                 <small><i>${data.timestamp}</i></small>
             </div>
         `;
-
-        // Append the message and scroll to the bottom
         messagesList.appendChild(messageDiv);
-        setTimeout(() => {
-            messagesList.scrollTop = messagesList.scrollHeight;
-        }, 0);
-    });
-    socket.on('typing', function(data) {
-        document.getElementById('typing-indicator').innerText = data.user + ' is typing...';
+        messagesList.scrollTop = messagesList.scrollHeight;
     });
 
-    socket.on('stop_typing', function() {
-        document.getElementById('typing-indicator').innerText = '';
+    // Typing notification
+    socket.on('typing', function (data) {
+        typingIndicator.innerText = `${data.user} is typing...`;
     });
 
-    socket.on('connect_error', function(error) {
+    socket.on('stop_typing', function () {
+        typingIndicator.innerText = '';
+    });
+
+    // Handle connection errors
+    socket.on('connect_error', function (error) {
         console.error('WebSocket connection error:', error);
     });
 </script>

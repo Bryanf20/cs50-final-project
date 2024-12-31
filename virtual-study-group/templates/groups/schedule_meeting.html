@@ -2,41 +2,49 @@
 
 {% block content %}
 <div class="container mt-5">
-  <h2>Schedule a Meeting for {{ group.name }}</h2>
-  <form method="POST">
-    {{ form.hidden_tag() }}
-    <div class="form-group">
-      {{ form.title.label }}<br>
-      {{ form.title(class="form-control") }}
-    </div>
-    <div class="form-group">
-      {{ form.date_time.label }}<br>
-      <input type="text" id="meeting_datetime" name="date_time" class="form-control" placeholder="Pick a date and time"
-        value="{{ form.date_time.data }}" required>
-    </div>
-    <div class="form-group">
-      {{ form.link.label }}<br>
-      <small class="form-text text-muted">Include "http://" or "https://".</small>
-      {{ form.link(class="form-control") }}
-      {% for error in form.link.errors %}
-        <small class="text-danger">{{ error }}</small>
-      {% endfor %}
-    </div>
-    <div class="form-group">
-      {{ form.submit(class="btn btn-primary") }}
-    </div>
-  </form>
-</div>
-{% endblock %}
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h3>Schedule a Meeting for {{ group.name }}</h3>
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                {{ form.hidden_tag() }}
 
-{% block script%}
-<!-- Initialize flatpickr -->
-<script>
-  flatpickr("#meeting_datetime", {
-    enableTime: true,            // Enable time selection
-    dateFormat: "Y-m-d\\TH:i",    // Date and time format (YYYY-MM-DD HH:MM)
-    minDate: "today",            // Disable past dates
-    time_24hr: true,             // 24-hour format
-  });
-</script>
+                <!-- Title Field -->
+                <div class="mb-3">
+                    <label for="title" class="form-label">{{ form.title.label }}</label>
+                    {{ form.title(class="form-control", id="title") }}
+                </div>
+
+                <!-- Date and Time Field -->
+                <div class="mb-3">
+                    <label for="date_time" class="form-label">{{ form.date_time.label }}</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+                        <input type="datetime-local" name="date_time" class="form-control" id="date_time"
+                            placeholder="Pick a date and time" value="{{ form.date_time.data }}" required>
+                    </div>
+                </div>
+
+                <!-- Meeting Link Field -->
+                <div class="mb-3">
+                    <label for="link" class="form-label">{{ form.link.label }}</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-link-45deg"></i></span>
+                        {{ form.link(class="form-control", id="link") }}
+                    </div>
+                    <small class="form-text text-muted">Include "http://" or "https://".</small>
+                    {% for error in form.link.errors %}
+                    <small class="text-danger">{{ error }}</small>
+                    {% endfor %}
+                </div>
+
+                <!-- Submit Button -->
+                <div class="d-grid">
+                    {{ form.submit(class="btn btn-primary btn-block") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}

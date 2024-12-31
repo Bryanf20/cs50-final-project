@@ -2,6 +2,83 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h1>Welcome to the Study Group App</h1>
+    <div class="text-center mb-4">
+        <h1 class="display-4">Welcome to the Virtual Study Group App</h1>
+        <p class="lead">Collaborate, Learn, and Achieve Together</p>
+    </div>
+
+    <!-- Authentication Links -->
+    {% if not current_user.is_authenticated %}
+    <div class="row mb-5">
+        <div class="col-md-6 text-center">
+            <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg w-100 mb-2">
+                <i class="bi bi-box-arrow-in-right me-2"></i> Login
+            </a>
+        </div>
+        <div class="col-md-6 text-center">
+            <a href="{{ url_for('auth.register') }}" class="btn btn-success btn-lg w-100">
+                <i class="bi bi-person-plus me-2"></i> Register
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Study Groups -->
+    <div class="mb-4">
+        <h4 class="mb-3">Explore Study Groups</h4>
+        <div class="row">
+            {% for group in groups %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ group.name }}</h5>
+                        <p class="card-text text-muted">{{ group.description }}</p>
+                        {% if current_user.is_authenticated and current_user.is_member_of(group) %}
+                        <!-- Members see the Dashboard button -->
+                        <a href="{{ url_for('groups.group_details', group_id=group.id) }}" class="btn btn-primary w-100">
+                            <i class="bi bi-layout-text-sidebar me-2"></i> Dashboard
+                        </a>
+                        {% elif current_user.is_authenticated %}
+                        <!-- Non-members see the Join Group button -->
+                        <form action="{{ url_for('groups.join_group', group_id=group.id) }}" method="POST" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="bi bi-person-plus-fill me-2"></i> Join Group
+                            </button>
+                        </form>
+                        {% else %}
+                        <!-- Unauthenticated users see a login prompt -->
+                        <p class="text-muted">Log in to join this group.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Create Group</h5>
+                        <p class="card-text text-muted">Create a study group</p>
+                        {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('groups.create_group') }}" class="btn btn-primary w-100">
+                            <i class="bi bi-plus-circle me-2"></i> Create Group
+                        </a>
+                        {% elif current_user.is_authenticated %}
+                        <!-- Non-members see the Join Group button -->
+                        <form action="{{ url_for('groups.join_group', group_id=group.id) }}" method="POST" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="bi bi-person-plus-fill me-2"></i> Join Group
+                            </button>
+                        </form>
+                        {% else %}
+                        <!-- Unauthenticated users see a login prompt -->
+                        <p class="text-muted">Log in to create group.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

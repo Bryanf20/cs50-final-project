@@ -13,12 +13,16 @@ chat_bp = Blueprint('chat', __name__, url_prefix='/chat')
 @login_required
 def post_message_http(group_id):
     group = Group.query.get_or_404(group_id)
-    
     content = request.form.get('content')
     
     if not content:
         flash("Message content is required", "warning")
-        return redirect(url_for('groups.group_details', group_id=group_id))
+        return redirect(url_for('groups.group_details', group_id=group.id))
+    
+    # Check if the user is a member
+    if not current_user.is_member_of(group):
+        flash('You are not a member of this group.', 'danger')
+        return redirect(url_for('groups.view_groups'))
     
     # Create a new chat message
     message = GroupChatMessage(content=content, user_id=current_user.id, group_id=group_id)
@@ -27,7 +31,7 @@ def post_message_http(group_id):
     db.session.add(message)
     db.session.commit()
     
-    # Emit message to all connected clients
+    # Emit message to all connected clients (Used ChatGPT)
     socketio.emit('new_message', {
         'user': current_user.username, 
         'content': content,
@@ -37,19 +41,25 @@ def post_message_http(group_id):
     return redirect(url_for('chat.view_chat', group_id=group_id))
 
 
-# WebSocket Event for Posting a Message
+# WebSocket Event for Posting a Message (Used ChatGPT)
 @socketio.on('post_message', namespace='/chat')
 def post_message_socketio(data):
     try:
         group_id = data.get('group_id')
         content = data.get('content')
+        group = Group.query.get_or_404(group_id)
         
         if not content:
             return
+        
+        # Check if the user is a member
+        if not current_user.is_member_of(group):
+            flash('You are not a member of this group.', 'danger')
+            return redirect(url_for('groups.view_groups'))
 
         # Process the message as usual
         group = Group.query.get_or_404(group_id)
-        message = GroupChatMessage(content=content, user_id=current_user.id, group_id=group_id)
+        message = GroupChatMessage(content=content, user_id=current_user.id, group_id=group.id)
         db.session.add(message)
         db.session.commit()
         
@@ -76,6 +86,11 @@ def stop_typing():
 @login_required
 def view_chat(group_id):
     group = Group.query.get_or_404(group_id)
+
+    # Check if the user is a member
+    if not current_user.is_member_of(group):
+        flash('You are not a member of this group.', 'danger')
+        return redirect(url_for('groups.view_groups'))
     
     # Fetch all messages in the group, sorted by timestamp
     messages = GroupChatMessage.query.filter_by(group_id=group_id).order_by(GroupChatMessage.timestamp).all()

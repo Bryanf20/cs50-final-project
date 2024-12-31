@@ -1,0 +1,37 @@
+.dropdown-menu .dropdown-item {
+    font-size: 0.9rem;
+}
+
+.dropdown-menu .text-muted {
+    color: #6c757d !important;
+}
+
+.nav-link .badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 0.7rem;
+}
+
+/* Custom Toast Styles */
+.toast-container {
+    z-index: 1050; /* Ensure it appears above all other elements */
+}
+
+.toast {
+    opacity: 0; /* Initially hidden */
+    animation: fade-in-out 5s forwards; /* Fade in and out */
+}
+
+@keyframes fade-in-out {
+    0% {
+        opacity: 0;
+    }
+    10%, 90% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+

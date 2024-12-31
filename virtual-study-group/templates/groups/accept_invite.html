@@ -2,10 +2,22 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h2>Join Group: {{ group.name }}</h2>
-  <p>{{ group.description }}</p>
-  <form method="POST">
-    <button type="submit" class="btn btn-primary">Join Group</button>
-  </form>
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h3>Join Group: {{ group.name }}</h3>
+        </div>
+        <div class="card-body">
+            <p class="text-muted">{{ group.description }}</p>
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-success btn-block" 
+                        onclick="return confirm('Are you sure you want to join this group?')">
+                        <i class="bi bi-person-plus-fill me-2"></i> Join Group
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 {% endblock %}
