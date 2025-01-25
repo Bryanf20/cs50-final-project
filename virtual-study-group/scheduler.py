@@ -21,6 +21,7 @@ def check_task_due_date(app):
         for task in tasks:
             task.check_due_date(task.assigned_to)
 
+
 def delete_old_meeting(app):
     with app.app_context():
         now = datetime.utcnow()

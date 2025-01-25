@@ -38,10 +38,10 @@ class User(db.Model):
     @property
     def is_anonymous(self):
         return False  # User models are never anonymous
-
-    def __repr__(self):
-        return f'<User {self.username}>'
-
+    
     def is_member_of(self, group):
         # Use the `memberships` relationship to check membership
         return any(membership.group_id == group.id for membership in self.memberships)
+
+    def __repr__(self):
+        return f'<User {self.username}>'

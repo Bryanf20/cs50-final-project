@@ -4,5 +4,5 @@ venv/
 .env
 /instance
 __pycache__
-static/uploads
-/instance
+/static/uploads
+/migrations
